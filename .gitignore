@@ -1,0 +1,10 @@
+# Config files
+config/local*.json       # Blocks local-*.json, local.json (override files)
+config/*.private.json   # Explicitly ignore private configs
+!/config/default.json   # KEEP this (safe defaults)
+!/config/custom-environment-variables.json  # KEEP this (template for env mapping)
+
+# Standard ignores
+node_modules/
+.env
+.env*.local
