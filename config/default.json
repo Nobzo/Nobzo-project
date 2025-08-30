@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 {
-  "blog_jwtPrivateKey": "yourSuperSecretKey123!"
+   "db": "mongodb://localhost:27017/nobzo",
+  "blog_jwtPrivateKey": "nobzo_jwtPrivateKey"
 }
-=======
 
-{
-    "blog_jwtPrivateKey": "nobzo_jwtPrivateKey"
-}
->>>>>>> 60571022a8105c030933491b28a8d3a0dbfd0f9b

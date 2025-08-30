@@ -2,67 +2,47 @@ const mongoose = require("mongoose");
 const config = require("config");
 const jwt = require("jsonwebtoken");
 
-<<<<<<< HEAD
-const userRoles = ["USER", "ADMIN"];
-=======
+// User roles
 const userRoles = ["USER", "ADMIN", "SUPERADMIN"];
->>>>>>> 60571022a8105c030933491b28a8d3a0dbfd0f9b
-// user schema
+
+// User schema
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
-<<<<<<< HEAD
-        required: true,
-=======
         required: function() { return !this.googleId },
->>>>>>> 60571022a8105c030933491b28a8d3a0dbfd0f9b
         minLength: 3,
         maxLength: 50
     },
     lastName: {
         type: String,
-<<<<<<< HEAD
-        required: true,
+        required: function() { return !this.googleId },
         minLength: 3,
         maxLength: 50
     },
     age: {
         type: Number,
-        required: true,
+        required: false // optional if using Google OAuth
     },
     gender: {
         type: String,
-        required: true,
         minLength: 4,
-        maxLength:50,
+        maxLength: 50,
+        required: false
     },
-=======
-        required: function() { return !this.googleId },
-        minLength: 3,
-        maxLength: 50
-    },
->>>>>>> 60571022a8105c030933491b28a8d3a0dbfd0f9b
     email: {
         type: String,
         required: true,
         minLength: 4,
-        maxLength:255,
+        maxLength: 255,
         unique: true
     },
     password: {
         type: String,
-<<<<<<< HEAD
-        required: true,
-        minLength: 4,
-        maxLength: 1024
-    },
-=======
         required: function() { return !this.googleId },
         minLength: 4,
         maxLength: 1024
     },
-    googleId: { type: String }, 
->>>>>>> 60571022a8105c030933491b28a8d3a0dbfd0f9b
+    googleId: { type: String }, // for Google OAuth users
     role: {
         type: String,
         enum: userRoles,
@@ -70,18 +50,19 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-// token generation method
-userSchema.methods.generateAuthToken = function (){
-
-    const token =  jwt.sign(
-        {_id: this._id, role: this.role}, // payload
-        config.get("blog_jwtPrivateKey") // Secret private key
-    ); 
-
+// Token generation method
+userSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign(
+        { _id: this._id, role: this.role }, // payload
+        config.get("blog_jwtPrivateKey")   // secret private key
+    );
     return token;
-}
+};
 
-// mongoose user model with schema
+// Mongoose User model
 const Users = mongoose.model("User", userSchema);
+
+module.exports = Users;
+
 
 
