@@ -1,3 +1,10 @@
+<<<<<<< HEAD
 {
   "blog_jwtPrivateKey": "yourSuperSecretKey123!"
 }
+=======
+
+{
+    "blog_jwtPrivateKey": "nobzo_jwtPrivateKey"
+}
+>>>>>>> 60571022a8105c030933491b28a8d3a0dbfd0f9b
