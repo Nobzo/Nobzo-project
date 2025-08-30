@@ -2,30 +2,20 @@ const mongoose = require("mongoose");
 const config = require("config");
 const jwt = require("jsonwebtoken");
 
-const userRoles = ["USER", "ADMIN"];
+const userRoles = ["USER", "ADMIN", "SUPERADMIN"];
 // user schema
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true,
+        required: function() { return !this.googleId },
         minLength: 3,
         maxLength: 50
     },
     lastName: {
         type: String,
-        required: true,
+        required: function() { return !this.googleId },
         minLength: 3,
         maxLength: 50
-    },
-    age: {
-        type: Number,
-        required: true,
-    },
-    gender: {
-        type: String,
-        required: true,
-        minLength: 4,
-        maxLength:50,
     },
     email: {
         type: String,
@@ -36,10 +26,11 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: function() { return !this.googleId },
         minLength: 4,
         maxLength: 1024
     },
+    googleId: { type: String }, 
     role: {
         type: String,
         enum: userRoles,

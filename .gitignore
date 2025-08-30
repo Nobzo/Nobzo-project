@@ -8,3 +8,5 @@ config/*.private.json   # Explicitly ignore private configs
 node_modules/
 .env
 .env*.local
+nobzo-ad542-firebase-adminsdk-fbsvc-c72dc97211.json
+firebase

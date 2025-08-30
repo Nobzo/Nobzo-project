@@ -7,8 +7,6 @@ const validateUser = ( data ) => {
     const schema = Joi.object({
         firstName: Joi.string().min(3).max(50).required(),
         lastName: Joi.string().min(3).max(50).required(),
-        age: Joi.number().required(),
-        gender: Joi.string().min(4).max(50).required(),
         email: Joi.string().email().min(5).max(255).required(),
         password: Joi.string().min(5).max(50).required()
     });
@@ -23,8 +21,6 @@ const validateUpdateUser = ( data ) => {
     const schema = Joi.object({
         firstName: Joi.string().min(3).max(50).required(),
         lastName: Joi.string().min(3).max(50).required(),
-        age: Joi.number().required(),
-        gender: Joi.string().min(4).max(50).required(),
         email: Joi.string().email().min(5).max(255).required(),
         role: Joi.string().valid('ADMIN', 'USER', 'guest')
         });

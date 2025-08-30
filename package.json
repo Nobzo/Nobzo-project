@@ -11,15 +11,17 @@
   "description": "Recursion Practice: Fetch All Posts Recursively\r As part of learning Data Structures and Algorithms (DSA), we explored recursive thinking using a practical example within this project.",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
     "config": "^4.0.0",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
     "joi": "^17.13.3",
     "joi-objectid": "^4.0.2",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.15.2",
-    "nodemon": "^3.1.10"
-  },
-  "devDependencies": {}
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.1"
+  }
 }
