@@ -4,13 +4,13 @@ const buildCommentTree = require('../utilities/commentTree');
 // Add a comment
 const addComment = async (req, res) => {
   try {
-    const { memeId, content, parentId } = req.body;
+    const { memeId, text, parentCommentId } = req.body;
 
     const comment = new Comment({
       memeId,
-      content,
-      parentId: parentId || null,
-      user: req.user._id
+      text, 
+      parentCommentId: parentCommentId || null,
+      author: req.user._id
     });
 
     await comment.save();
@@ -20,6 +20,7 @@ const addComment = async (req, res) => {
   }
 };
 
+
 // Delete a comment
 const deleteComment = async (req, res) => {
   try {
@@ -27,7 +28,7 @@ const deleteComment = async (req, res) => {
 
     if (!comment) return res.status(404).json({ error: 'Comment not found' });
 
-    if (String(comment.user) !== String(req.user._id)) {
+    if (String(comment.author) !== String(req.user._id)) {
       return res.status(403).json({ error: 'Not authorized' });
     }
 

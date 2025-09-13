@@ -3,7 +3,7 @@ function buildCommentTree(comments) {
     const roots = [];
 
     comments.forEach(comment => {
-        comment = comment.toObject();
+        // comment = comment.toObject();
         comment.replies = [];
         commentMap[comment._id] = comment;
     });

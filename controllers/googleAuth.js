@@ -19,7 +19,6 @@ router.post("/google", async (req, res) => {
       const [firstName, ...lastArr] = (name || "").split(" ");
       const lastName = lastArr.join(" ") || "";
   
-      // 2. Correct Mongoose query
       let user = await User.findOne({ email });
   
       if (!user) {

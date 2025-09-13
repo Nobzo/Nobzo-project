@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const _ = require("lodash");
+const crypto = require("crypto");
 // model
 const Users = require("../models/user");
 // middleware
@@ -121,69 +122,125 @@ router.put("/ban/:id", async (req, res) => {
 });
 
 // Create a user
-router.post("/", async (req, res) => {
-    // validate incoming body
-    const { error } = validateUser(req.body);
-    if(error){
-        return res.status(400).send({
-            message: "Oops! Failed to create user.",
-            errorDetails: error.details[0].message
-        })
-    }
+// router.post("/", async (req, res) => {
+//     // validate incoming body
+//     const { error } = validateUser(req.body);
+//     if(error){
+//         return res.status(400).send({
+//             message: "Oops! Failed to create user.",
+//             errorDetails: error.details[0].message
+//         })
+//     }
 
-    try {
-         // create new profile instance
-        let newUser = new Users({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: req.body.password
-        })
+//     try {
+//          // create new profile instance
+//         let newUser = new Users({
+//             firstName: req.body.firstName,
+//             lastName: req.body.lastName,
+//             email: req.body.email,
+//             password: req.body.password
+//         })
 
-        // Hash password using bcrypt
-        newUser.password = await bcrypt.hash(req.body.password, 10);
+//         // Hash password using bcrypt
+//         newUser.password = await bcrypt.hash(req.body.password, 10);
 
-        // save new user in database
-        await newUser.save();
+//         // save new user in database
+//         await newUser.save();
 
-        // send response
-        res.send({
-            message: "Success creating user!",
-            data: _.pick(newUser, ["_id","firstName","lastName","email","role"])
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send({
-            message: "An unexpected error occurred",
-            details: err
-        })
-    }
+//         // send response
+//         res.send({
+//             message: "Success creating user!",
+//             data: _.pick(newUser, ["_id","firstName","lastName","email","role"])
+//         });
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).send({
+//             message: "An unexpected error occurred",
+//             details: err
+//         })
+//     }
    
-})
+// })
+
+
+router.post("/", async (req, res) => {
+  // validate incoming body
+  const { error } = validateUser(req.body);
+  if (error) {
+    return res.status(400).send({
+      message: "Oops! Failed to create user.",
+      errorDetails: error.details[0].message,
+    });
+  }
+
+  try {
+    // Generate username automatically
+    const baseUsername =
+      req.body.firstName.toLowerCase();
+    const randomSuffix = crypto.randomInt(1000, 9999); 
+    let username = `${baseUsername}_${randomSuffix}`;
+
+    
+    let existingUser = await Users.findOne({ username });
+    while (existingUser) {
+      const newSuffix = crypto.randomInt(1000, 9999);
+      username = `${baseUsername}_${newSuffix}`;
+      existingUser = await Users.findOne({ username });
+    }
+
+   
+    let newUser = new Users({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      password: req.body.password,
+      username: username, 
+    });
+
+    
+    newUser.password = await bcrypt.hash(req.body.password, 10);
+
+    
+    await newUser.save();
+
+   
+    res.send({
+      message: "Success creating user!",
+      data: _.pick(newUser, [
+        "_id",
+        "firstName",
+        "lastName",
+        "email",
+        "role",
+        "username", 
+      ]),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      message: "An unexpected error occurred",
+      details: err,
+    });
+  }
+});
+
 
 // update a user
 router.put("/:id", async (req, res) => {
     // validate incoming body
-    const { error } = validateUpdateUser(req.body);
-    if (error) {
+    if (!req.body.username || typeof req.body.username !== "string") {
         return res.status(400).send({
             message: "Oops! Failed to update user.",
-            errorDetails: error.details[0].message
+            errorDetails: "Username is required and must be a string"
         });
     }
 
     try {
-        // only update safe fields (no role here)
+        // update ONLY the username
         const updatedUser = await Users.findByIdAndUpdate(
             req.params.id,
-            {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                age: req.body.age,
-                gender: req.body.gender,
-                email: req.body.email
-            },
-            { new: true }
+            { username: req.body.username },
+            { new: true, runValidators: true } 
         );
 
         if (!updatedUser) {
@@ -191,17 +248,18 @@ router.put("/:id", async (req, res) => {
         }
 
         res.send({
-            message: "Success updating user",
-            data: updatedUser
+            message: "Success updating username",
+            data: _.pick(updatedUser, ["_id", "firstName", "lastName", "email", "username", "role"]) 
         });
     } catch (err) {
         console.error(err);
         res.status(500).send({
             message: "An unexpected error occurred",
-            details: err
+            details: err.message
         });
     }
 });
+
 
 
 // Promote a user to admin or superadmin
@@ -237,7 +295,7 @@ router.put("/:id", async (req, res) => {
 //     }
 //   });
   
-  
+
 
 
 module.exports = router;

@@ -27,11 +27,20 @@ const memeSchema = new mongoose.Schema({
     hashtags: {
         type: [String],
     },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category", 
+        required: true,
+      },
     downloadCount: {
         type: Number,
         default: 0,
     },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    author: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected', 'delete_pending', 'delete_rejected'],
