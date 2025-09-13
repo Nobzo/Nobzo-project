@@ -1,0 +1,23 @@
+<script type="module">
+  // Import Firebase SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+  // Config from your Firebase project
+  const firebaseConfig = {
+    apiKey: "AIzaSyCQoJPMVOcP0j-Ou_j8yVNmaKfv20dKxDg",
+    authDomain: "nobzo-ad542.firebaseapp.com",
+    projectId: "nobzo-ad542",
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Google Sign-In
+  signInWithPopup(auth, provider)
+    .then((result) => result.user.getIdToken())
+    .then((token) => console.log("ID Token:", token))
+    .catch((error) => console.error(error));
+</script>
