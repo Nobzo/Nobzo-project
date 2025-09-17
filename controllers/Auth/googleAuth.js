@@ -1,9 +1,9 @@
-const admin = require("../firebase");
+const admin = require("../../firebase");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user"); 
+const User = require("../../models/user"); 
 module.exports = router;
 
 // Google Login/Signup

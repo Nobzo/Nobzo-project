@@ -2,6 +2,7 @@ const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
 const app = express();
+require("dotenv").config();
 
 // Start up related functions
 require("./startup/config")();
