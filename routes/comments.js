@@ -1,29 +1,36 @@
 const express = require("express");
 const router = express.Router();
-const Comment = require("../models/Comments");
+const Comment = require("../models/Comments"); // ✅ singular
 const verifyAuthToken = require("../middleware/auth");
-const { validateComment } = require("../utilities/utility");
 
 // Add a comment
-router.post("/:postId", verifyAuthToken, async (req, res) => {
-    const { error } = validateComment(req.body);
-    if (error) return res.status(400).send({ message: "Invalid comment data", errorDetails: error.details[0].message });
+router.post("/:memeId", verifyAuthToken, async (req, res) => {
+    const { text } = req.body;
+    if (!text) {
+        return res.status(400).send({ message: "Comment text is required" });
+    }
 
     try {
-        const { content } = req.body;
-        const comment = new Comment({ postId: req.params.postId, userId: req.user._id, content });
+        const comment = new Comment({
+            memeId: req.params.memeId,   // ✅ match schema
+            author: req.user._id,        // from JWT
+            text: text
+        });
+
         await comment.save();
-        res.send({ message: "Comment added", data: comment });
+        res.status(201).send({ message: "Comment added", data: comment });
     } catch (err) {
         res.status(500).send({ message: "Error adding comment", details: err });
     }
 });
 
-// Get comments for a post
-router.get("/:postId", async (req, res) => {
+// Get all comments for a meme
+router.get("/:memeId", async (req, res) => {
     try {
-        const comments = await Comment.find({ postId: req.params.postId }).populate("userId", "firstName lastName email");
-        res.send({ message: "Comments retrieved", data: comments });
+        const comments = await Comment.find({ memeId: req.params.memeId })
+            .populate("author", "firstName lastName email"); // ✅ show user info
+
+        res.status(200).send({ message: "Comments retrieved", data: comments });
     } catch (err) {
         res.status(500).send({ message: "Error fetching comments", details: err });
     }

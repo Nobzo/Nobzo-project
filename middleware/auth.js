@@ -1,32 +1,17 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const jwt = require('jsonwebtoken');
 
-const verifyAuthToken = async (req, res, next) => {
-    const token = req.header("Authorization")?.replace("Bearer ", "");
-
-    if (!token) {
-        return res.status(401).json({ message: "Access denied. No token provided." });
-    }
+function verifyAuthToken(req, res, next) {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) return res.status(401).send({ message: 'Access denied. No token provided.' });
 
     try {
-        const decoded = jwt.verify(token, process.env.blog_jwtPrivateKey);
-
-        
-        console.log("JWT Payload:", decoded);
-
-        // fetch the full user
-        const user = await User.findById(decoded._id);
-
-        if (!user) {
-            return res.status(401).json({ message: "Unauthorized. No user found in request." });
-        }
-
-        req.user = user;
+        const decoded = jwt.verify(token, process.env.JWT_KEY); // USE process.env.JWT_KEY
+        req.user = decoded;
         next();
-    } catch (err) {
-        console.error("JWT Verification Error:", err);
-        res.status(400).json({ message: "Invalid token", details: err });
+    } catch (ex) {
+        console.error('JWT Verification Error:', ex);
+        res.status(400).send({ message: 'Invalid token', details: ex });
     }
-};
+}
 
 module.exports = verifyAuthToken;

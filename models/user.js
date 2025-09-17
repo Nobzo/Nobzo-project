@@ -1,46 +1,49 @@
 const mongoose = require("mongoose");
-const config = require("config");
 const jwt = require("jsonwebtoken");
 
-// User roles
+// Define user roles
 const userRoles = ["USER", "ADMIN", "SUPERADMIN"];
 
 // User schema
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: function() { return !this.googleId },
-        minLength: 3,
-        maxLength: 50
+        required: function() { return !this.googleId; },
+        minlength: 3,
+        maxlength: 50,
+        trim: true
     },
     lastName: {
         type: String,
-        required: function() { return !this.googleId },
-        minLength: 3,
-        maxLength: 50
+        required: function() { return !this.googleId; },
+        minlength: 3,
+        maxlength: 50,
+        trim: true
     },
     age: {
         type: Number,
-        required: false // optional if using Google OAuth
+        required: false
     },
     gender: {
         type: String,
-        minLength: 4,
-        maxLength: 50,
+        minlength: 4,
+        maxlength: 50,
         required: false
     },
     email: {
         type: String,
         required: true,
-        minLength: 4,
-        maxLength: 255,
-        unique: true
+        unique: true,
+        minlength: 4,
+        maxlength: 255,
+        trim: true,
+        lowercase: true
     },
     password: {
         type: String,
-        required: function() { return !this.googleId },
-        minLength: 4,
-        maxLength: 1024
+        required: function() { return !this.googleId; },
+        minlength: 4,
+        maxlength: 1024
     },
     googleId: { type: String }, // for Google OAuth users
     role: {
@@ -48,21 +51,18 @@ const userSchema = new mongoose.Schema({
         enum: userRoles,
         default: "USER"
     }
-});
+}, { timestamps: true });
 
-// Token generation method
+// Method to generate JWT token
 userSchema.methods.generateAuthToken = function () {
     const token = jwt.sign(
-        { _id: this._id, role: this.role }, // payload
-        config.get("blog_jwtPrivateKey")   // secret private key
+        { _id: this._id, role: this.role },
+        process.env.JWT_KEY,   // read secret from environment variable
+        { expiresIn: "1h" }    // token expires in 1 hour
     );
     return token;
 };
 
-// Mongoose User model
-const Users = mongoose.model("User", userSchema);
-
-module.exports = Users;
-
-
-
+// Create and export User model
+const User = mongoose.model("User", userSchema);
+module.exports = User;

@@ -4,37 +4,40 @@ const router = express.Router();
 const { validateLogin } = require("../utilities/utility");
 const User = require("../models/user");
 
-router.post("/", async (req, res)=>{
-    // validate incoming body
+// POST /api/auth/login
+router.post("/login", async (req, res) => {
+    // Validate incoming body
     const { error } = validateLogin(req.body);
-    if(error){
+    if (error) {
         return res.status(400).send({
             message: "Oops! Failed to login user.",
             errorDetails: error.details[0].message
-        })
+        });
     }
-    
-    try {
-        const foundUser = await User.findOne({email: req.body.email}); // check if email exists in the database
-        if(!foundUser) return res.status(400).send("Invalid email or password!"); // send feedback response if not found
-        
-        const validPassword = await bcrypt.compare(req.body.password, foundUser.password); // compare user password with hashed password
-        if(!validPassword) return res.status(400).send("Invalid email or password!"); // send feedback if user password doesn't match
 
-        const token = foundUser.generateAuthToken(); // Generate authToken using method created by encapsulating the login in model
-        
+    try {
+        const foundUser = await User.findOne({ email: req.body.email });
+        if (!foundUser)
+            return res.status(400).send({ message: "Invalid email or password!" });
+
+        const validPassword = await bcrypt.compare(req.body.password, foundUser.password);
+        if (!validPassword)
+            return res.status(400).send({ message: "Invalid email or password!" });
+
+        // Generate JWT token
+        const token = foundUser.generateAuthToken();
+
         res.send({
-            message: "Successfully Logged in!", // send response
+            message: "Successfully Logged in!",
             token: token
         });
     } catch (error) {
-        console.error(err);
+        console.error(error);
         res.status(500).send({
             message: "An unexpected error occurred",
-            details: err
-        })
+            details: error.message
+        });
     }
-})
-
+});
 
 module.exports = router;

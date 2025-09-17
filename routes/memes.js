@@ -4,7 +4,6 @@ const Meme = require("../models/Meme");
 const verifyAuthToken = require("../middleware/auth");
 
 // Upload a meme
-// Assuming you are using multer middleware for file upload
 const multer = require("multer");
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {

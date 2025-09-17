@@ -1,0 +1,205 @@
+{
+  "info": {
+    "name": "Social Media API with Auto Token",
+    "_postman_id": "12345-67890-embedded-token",
+    "description": "Collection for testing Posts, Comments, and Likes APIs with automatic JWT token generation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "authToken",
+      "value": ""
+    },
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Test Server",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/test",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","test"]
+        }
+      }
+    },
+    {
+      "name": "Create Post",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"My First Post\",\n  \"content\": \"This is a test post.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","posts"]
+        }
+      }
+    },
+    {
+      "name": "Get All Posts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","posts"]
+        }
+      }
+    },
+    {
+      "name": "Get Single Post",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/posts/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","posts","<POST_ID>"]
+        }
+      }
+    },
+    {
+      "name": "Update Post",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated Post\",\n  \"content\": \"Updated content.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/posts/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","posts","<POST_ID>"]
+        }
+      }
+    },
+    {
+      "name": "Delete Post",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/posts/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","posts","<POST_ID>"]
+        }
+      }
+    },
+    {
+      "name": "Add Comment",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"This is a test comment.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/comments/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","comments","<POST_ID>"]
+        }
+      }
+    },
+    {
+      "name": "Get Comments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/comments/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","comments","<POST_ID>"]
+        }
+      }
+    },
+    {
+      "name": "Like / Unlike Post",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/likes/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","likes","<POST_ID>"]
+        }
+      }
+    },
+    {
+      "name": "Get Likes Count",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/likes/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","likes","<POST_ID>"]
+        }
+      }
+    },
+    {
+      "name": "Get Users Who Liked Post",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/likes/users/<POST_ID>",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","likes","users","<POST_ID>"]
+        }
+      }
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "if (!pm.variables.get('authToken')) {",
+          "    pm.sendRequest({",
+          "        url: pm.variables.get('baseUrl') + '/api/auth/login',",
+          "        method: 'POST',",
+          "        header: { 'Content-Type': 'application/json' },",
+          "        body: {",
+          "            mode: 'raw',",
+          "            raw: JSON.stringify({ email: 'your_test_user@example.com', password: 'yourpassword' })",
+          "        }",
+          "    }, function (err, res) {",
+          "        if (!err) {",
+          "            var jsonData = res.json();",
+          "            pm.variables.set('authToken', jsonData.token);",
+          "        }",
+          "    });",
+          "}",
+          "// Attach token to Authorization header",
+          "pm.request.headers.upsert({ key: 'Authorization', value: 'Bearer ' + pm.variables.get('authToken') });"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}
