@@ -2,7 +2,7 @@ const express = require("express");
 const users = require("../controllers/user");
 const logout = require("../controllers/logOutController");
 const login = require("../controllers/login");
-const google = require("../controllers/googleAuth");
+const google = require("../controllers/Auth/googleAuth");
 
 module.exports = (app)=>{
     app.use(express.json()); //parse incoming body to json
@@ -12,7 +12,9 @@ module.exports = (app)=>{
     const likeRoutes = require('../routes/likeRoutes');
     const promoteUserRoutes = require('../routes/promoteUser');
     const activityLogRoutes = require('../routes/activityLog');
+    const authRoute = require('../routes/authRoutes');
 
+    app.use('/api/auth', authRoute);
     app.use('/api/analytics', analytics);
     app.use('/api/activityLogs', activityLogRoutes);
     app.use('/api/memes', memeRoutes);
